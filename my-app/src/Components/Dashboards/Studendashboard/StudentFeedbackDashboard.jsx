@@ -5,12 +5,12 @@ import { FaHome, FaUser, FaBuilding, FaClipboardList } from 'react-icons/fa';
 
 const StudentFeedbackDashboard = ({ isDarkMode, user }) => {
   return (
-    <div className={`flex min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    <div className={`flex flex-col md:flex-row min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
       <Sidebar isDarkMode={isDarkMode} />
 
-      <div className='flex-1 p-4 md:ml-0'>
+      <div className="flex-1 min-w-0 w-full p-4 pt-16 md:pt-4">
         <div className={`rounded-lg p-6 mb-6 shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <h1 className={`text-4xl font-bold mb-4 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <h1 className={`text-2xl sm:text-4xl font-bold mb-4 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             Welcome, {user || 'Student'}
           </h1>
           <p className={`text-lg text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>

@@ -183,9 +183,9 @@ const AdminDashboard = ({ isDarkMode }) => {
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <header className={`shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <div className="flex space-x-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between py-6">
+            <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => {
                   setLoadingStats(true);
@@ -195,13 +195,13 @@ const AdminDashboard = ({ isDarkMode }) => {
                   };
                   loadData();
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 Refresh Data
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
                 Logout
               </button>
@@ -212,7 +212,7 @@ const AdminDashboard = ({ isDarkMode }) => {
 
       <nav className={`border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
+          <div className="flex flex-wrap gap-4">
             <button
               onClick={() => setActiveTab('overview')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
@@ -242,10 +242,10 @@ const AdminDashboard = ({ isDarkMode }) => {
           {activeTab === 'overview' && (
             <>
               {/* LEARNER TYPE FILTER */}
-              <div className="flex justify-center space-x-4 mb-6">
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
                 <button
                   onClick={() => setLearningTypeFilter("All")}
-                  className={`px-4 py-2 rounded-md font-semibold ${
+                  className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
                     learningTypeFilter === "All"
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -255,7 +255,7 @@ const AdminDashboard = ({ isDarkMode }) => {
                 </button>
                 <button
                   onClick={() => setLearningTypeFilter("Fast Learner")}
-                  className={`px-4 py-2 rounded-md font-semibold ${
+                  className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
                     learningTypeFilter === "Fast Learner"
                       ? "bg-green-500 text-white"
                       : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -265,7 +265,7 @@ const AdminDashboard = ({ isDarkMode }) => {
                 </button>
                 <button
                   onClick={() => setLearningTypeFilter("Slow Learner")}
-                  className={`px-4 py-2 rounded-md font-semibold ${
+                  className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
                     learningTypeFilter === "Slow Learner"
                       ? "bg-yellow-500 text-white"
                       : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"

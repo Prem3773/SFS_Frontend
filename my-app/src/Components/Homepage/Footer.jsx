@@ -30,8 +30,8 @@ const items = [
 
 const Footer = () => {
   return (
-    <div className="w-full mt-10 bg-slate-800 text-gray-300 py-y px-7  flex flex-col justify-between "> 
-      <div className="w-full grid grid-cols-1 md:grid-cols-5  border-b-2 border-gray-600 py-8">
+    <div className="w-full mt-10 bg-slate-800 text-gray-300 py-8 px-4 sm:px-7 flex flex-col justify-between"> 
+      <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-6 border-b-2 border-gray-600 py-8">
         {sections.map((section, index) => (
           <div key={index}>
             <h6 className="font-bold uppercase pt-2">{section.title}</h6>
@@ -52,11 +52,11 @@ const Footer = () => {
           </p>
           <form className="flex flex-col sm:flex-row">
             <input
-              className="w-full p-2 mr-4 rounded-md mb-4"
+              className="w-full p-2 sm:mr-4 rounded-md mb-4"
               type="email"
               placeholder="Enter email.."
             />
-            <button className="p-2 mb-4">Subscribe</button>
+            <button className="w-full sm:w-auto p-2 mb-4">Subscribe</button>
           </form>
         </div>
       </div>

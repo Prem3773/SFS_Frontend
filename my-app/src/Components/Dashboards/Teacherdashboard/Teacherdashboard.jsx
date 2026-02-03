@@ -101,25 +101,27 @@ const Teacherdashboard = ({ user }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
       <TeacherSidebar />
 
-      <div className="flex-1 p-4">
+      <div className="flex-1 min-w-0 w-full p-4 pt-16 md:pt-4">
 
         {/* HEADER */}
         <div className="relative bg-white dark:bg-gray-800 rounded-lg p-6 mb-6 shadow-md">
-          <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white">
+          <h1 className="text-2xl sm:text-4xl font-bold text-center text-gray-800 dark:text-white">
             Welcome, {user || "Teacher"}
           </h1>
           <p className="text-center text-gray-500 dark:text-gray-300 mt-2">
             AI & ML Powered Teacher Performance Dashboard
           </p>
-          <button
-            onClick={() => setShowReport(!showReport)}
-            className="absolute top-6 right-6 px-4 py-2 rounded-md font-semibold bg-purple-500 text-white hover:bg-purple-600 transition"
-          >
-            {showReport ? "View Dashboard" : "Generate Report"}
-          </button>
+          <div className="mt-4 sm:mt-0 sm:absolute sm:top-6 sm:right-6">
+            <button
+              onClick={() => setShowReport(!showReport)}
+              className="w-full sm:w-auto px-4 py-2 rounded-md font-semibold bg-purple-500 text-white hover:bg-purple-600 transition"
+            >
+              {showReport ? "View Dashboard" : "Generate Report"}
+            </button>
+          </div>
         </div>
 
         {showReport ? (
@@ -127,10 +129,10 @@ const Teacherdashboard = ({ user }) => {
         ) : (
           <>
             {/* LEARNER TYPE FILTER */}
-            <div className="flex justify-center space-x-4 mb-6">
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
               <button
                 onClick={() => setLearningTypeFilter("All")}
-                className={`px-4 py-2 rounded-md font-semibold ${
+                className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
                   learningTypeFilter === "All"
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -140,7 +142,7 @@ const Teacherdashboard = ({ user }) => {
               </button>
               <button
                 onClick={() => setLearningTypeFilter("Fast Learner")}
-                className={`px-4 py-2 rounded-md font-semibold ${
+                className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
                   learningTypeFilter === "Fast Learner"
                     ? "bg-green-500 text-white"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -150,7 +152,7 @@ const Teacherdashboard = ({ user }) => {
               </button>
               <button
                 onClick={() => setLearningTypeFilter("Slow Learner")}
-                className={`px-4 py-2 rounded-md font-semibold ${
+                className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
                   learningTypeFilter === "Slow Learner"
                     ? "bg-yellow-500 text-white"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -256,7 +258,7 @@ const Teacherdashboard = ({ user }) => {
                           <p className="text-gray-800 dark:text-gray-200">
                             {fb.responses.additionalComments}
                           </p>
-                          <div className="flex justify-between items-center mt-2">
+                          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mt-2">
                             <span className="text-sm text-gray-500 dark:text-gray-400">
                               - {fb.userId.username}
                             </span>

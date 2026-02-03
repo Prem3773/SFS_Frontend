@@ -28,17 +28,17 @@ const FeedbackHistory = () => {
   ];
 
   return (
-    <div className='p-6 bg-gray-100 dark:bg-gray-800 min-h-screen'>
-      <div className='max-w-6xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-6'>
+    <div className='min-h-screen bg-gray-100 dark:bg-gray-800 py-8 sm:py-10 px-4'>
+      <div className='w-full max-w-6xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 sm:p-6'>
         <div className='flex items-center mb-6'>
           <FaClipboardList className='text-3xl text-orange-500 mr-3' />
-          <h1 className='text-3xl font-bold text-gray-800 dark:text-white'>Feedback History</h1>
+          <h1 className='text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white'>Feedback History</h1>
         </div>
         <p className='text-gray-600 dark:text-gray-300 mb-6'>
           Review your previous feedback submissions. All feedback is analyzed by AI to drive improvements.
         </p>
         <div className='overflow-x-auto'>
-          <table className='w-full table-auto border-collapse border border-gray-300 dark:border-gray-600'>
+          <table className='w-full table-auto border-collapse border border-gray-300 dark:border-gray-600 text-sm sm:text-base'>
             <thead>
               <tr className='bg-gray-50 dark:bg-gray-600'>
                 <th className='border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-800 dark:text-white'>Type</th>

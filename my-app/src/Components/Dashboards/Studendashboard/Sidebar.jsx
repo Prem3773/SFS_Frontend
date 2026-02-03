@@ -20,9 +20,9 @@ const Sidebar = ({ isDarkMode }) => {
       </button>
 
       {/* Sidebar */}
-      <div className={`overflow-y-scroll sticky top-0 left-0 h-screen p-5 bg-gray-200 dark:bg-gray-800 transition-transform duration-300 ease-in-out ${
+      <div className={`fixed top-0 left-0 h-screen w-64 p-5 bg-gray-200 dark:bg-gray-800 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:translate-x-0 md:static md:w-64 z-40`}>
+      } md:translate-x-0 md:sticky md:top-0 md:w-64 z-40`}>
         <h1 className='text-xl font-bold mb-6 text-gray-800 dark:text-white'>
           Student Dashboard
         </h1>

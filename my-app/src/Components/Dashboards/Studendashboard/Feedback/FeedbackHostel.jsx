@@ -29,11 +29,11 @@ const FeedbackHostel = () => {
   };
 
   return (
-    <div className='p-6 bg-gray-100 dark:bg-gray-800 min-h-screen'>
-      <div className='max-w-4xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-6'>
+    <div className='min-h-screen bg-gray-100 dark:bg-gray-800 py-8 sm:py-10 px-4'>
+      <div className='w-full max-w-4xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 sm:p-6'>
         <div className='flex items-center mb-6'>
           <FaHome className='text-3xl text-blue-500 mr-3' />
-          <h1 className='text-3xl font-bold text-gray-800 dark:text-white'>Hostel Feedback</h1>
+          <h1 className='text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white'>Hostel Feedback</h1>
         </div>
         <p className='text-gray-600 dark:text-gray-300 mb-6'>
           Provide detailed feedback on hostel facilities. Your input helps improve living conditions and will be analyzed by AI.

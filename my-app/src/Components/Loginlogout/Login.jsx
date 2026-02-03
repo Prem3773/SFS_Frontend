@@ -74,14 +74,14 @@ const Login = ({ onLogin }) => {
 
 
   return (
-    <div className=' w-max mx-auto'>
-        <section ref={loginRef} className="py-20 bg-gray-50 dark:bg-gray-900">
+    <div className="w-full">
+        <section ref={loginRef} className="py-12 sm:py-20 bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-md mx-auto">
               <div className="bg-white shadow-lg rounded-lg p-6 border">
                 <div className="text-center">
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Access Your Dashboard</h2>
-                  <p className="mt-2 text-lg text-gray-600">Login to continue to EduPulse.</p>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">Access Your Dashboard</h2>
+                  <p className="mt-2 text-lg text-gray-600">Login to continue to EduFeed.</p>
                 </div>
                 <form onSubmit={handleLoginFormSubmit} className="mt-8 space-y-6">
                   <div>
@@ -108,7 +108,7 @@ const Login = ({ onLogin }) => {
                   </div>
                   <p className="text-xs text-center text-gray-500"></p>
                   <div>
-                    <Button type="submit" className="w-full py-3 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:-purple-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200" variant="primary">Login</Button>
+                    <Button type="submit" className="w-full py-3 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200" variant="primary">Login</Button>
                   </div>
                   <div className="flex items-center justify-center text-sm text-gray-600">
                     <span>Don't have an account?</span>

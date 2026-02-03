@@ -138,9 +138,9 @@ const FeedbackTeacher = () => {
 
   if (attendance !== null && attendance < 75) {
     return (
-      <div className='p-6 bg-gray-100 dark:bg-gray-800 min-h-screen'>
-        <div className='max-w-4xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-6'>
-          <h1 className='text-3xl font-bold text-gray-800 dark:text-white mb-6'>Teacher Feedback</h1>
+      <div className='min-h-screen bg-gray-100 dark:bg-gray-800 py-8 sm:py-10 px-4'>
+        <div className='w-full max-w-4xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 sm:p-6'>
+          <h1 className='text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-6'>Teacher Feedback</h1>
           <p className='text-red-600'>
             You are not eligible to submit feedback due to insufficient attendance ({attendance}%).
           </p>
@@ -150,11 +150,11 @@ const FeedbackTeacher = () => {
   }
 
   return (
-    <div className='p-6 bg-gray-100 dark:bg-gray-800 min-h-screen'>
-      <div className='max-w-4xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-6'>
+    <div className='min-h-screen bg-gray-100 dark:bg-gray-800 py-8 sm:py-10 px-4'>
+      <div className='w-full max-w-4xl mx-auto bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 sm:p-6'>
         <div className='flex items-center mb-6'>
           <FaUser className='text-3xl text-green-500 mr-3' />
-          <h1 className='text-3xl font-bold text-gray-800 dark:text-white'>Teacher Feedback</h1>
+          <h1 className='text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white'>Teacher Feedback</h1>
         </div>
         <p className='text-gray-600 dark:text-gray-300 mb-6'>
           Provide detailed feedback on your teachers. Your input helps enhance teaching quality and will be analyzed by AI.

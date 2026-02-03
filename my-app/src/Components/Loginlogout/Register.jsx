@@ -50,8 +50,9 @@ const Register = ({ onRegister }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto py-20 bg-gray-50 dark:bg-gray-900">
-      <div className="bg-white shadow-lg rounded-lg p-8 border">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 sm:py-20 px-4">
+      <div className="w-full max-w-md mx-auto">
+        <div className="bg-white shadow-lg rounded-lg p-6 sm:p-8 border">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           Create Account
         </h2>
@@ -150,6 +151,7 @@ const Register = ({ onRegister }) => {
             </a>
           </p>
         </form>
+        </div>
       </div>
     </div>
   );
