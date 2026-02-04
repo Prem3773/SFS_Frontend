@@ -1,210 +1,253 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Aboutpage = () => {
+  const stats = [
+    { label: 'Feedback Areas', value: '3', detail: 'Teacher, Hostel, Campus' },
+    { label: 'Dashboards', value: '3', detail: 'Student, Teacher, Admin' },
+    { label: 'Learner Filters', value: '2', detail: 'Fast and Slow Learner' },
+    { label: 'Insights', value: 'AI/ML', detail: 'Sentiment, trends, summaries' }
+  ]
+
+  const capabilities = [
+    {
+      title: 'Multi-Area Feedback',
+      description:
+        'Collect structured feedback across teacher, hostel, and campus experiences from one system.'
+    },
+    {
+      title: 'Attendance-Aware Submissions',
+      description:
+        'Teacher feedback respects eligibility rules so submissions stay fair and accountable.'
+    },
+    {
+      title: 'AI/ML Sentiment Signals',
+      description:
+        'Feedback is classified into positive, neutral, and negative sentiment for faster action.'
+    },
+    {
+      title: 'Trend and Insight Dashboards',
+      description:
+        'Teachers see trends, improvement areas, and AI summaries to guide better outcomes.'
+    },
+    {
+      title: 'Learner-Type Filters',
+      description:
+        'Compare feedback from Fast Learner and Slow Learner groups for more precise insights.'
+    },
+    {
+      title: 'Admin Oversight',
+      description:
+        'Admins monitor totals, categories, and manage users with a dedicated dashboard.'
+    }
+  ]
+
+  const steps = [
+    {
+      title: 'Students Submit Feedback',
+      detail: 'Teacher, hostel, and campus feedback is captured in a structured format.'
+    },
+    {
+      title: 'AI/ML Analyzes Signals',
+      detail: 'Sentiment and themes are summarized to highlight what matters most.'
+    },
+    {
+      title: 'Teachers Improve',
+      detail: 'Dashboards reveal trends, areas for improvement, and actionable summaries.'
+    },
+    {
+      title: 'Admins Monitor',
+      detail: 'Institution-wide analytics and user management support accountability.'
+    }
+  ]
+
+  const roles = [
+    {
+      title: 'Students',
+      description:
+        'Share experiences and track your feedback history across hostel, campus, and teaching quality.',
+      bullets: [
+        'Submit structured feedback across multiple areas',
+        'Eligibility checks for teacher feedback',
+        'View feedback history and status'
+      ],
+      accent: 'bg-blue-500'
+    },
+    {
+      title: 'Teachers',
+      description:
+        'Understand sentiment, trends, and learning-type differences to improve outcomes.',
+      bullets: [
+        'Sentiment distribution and monthly trends',
+        'AI-generated summaries and improvement areas',
+        'Fast Learner and Slow Learner filters'
+      ],
+      accent: 'bg-emerald-500'
+    },
+    {
+      title: 'Admins',
+      description:
+        'Oversee feedback volumes, category distribution, and user management in one place.',
+      bullets: [
+        'Category-level analytics',
+        'User management controls',
+        'System-wide visibility and oversight'
+      ],
+      accent: 'bg-amber-500'
+    }
+  ]
+
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 bg-gray-50 text-gray-900">
-      <div className="max-w-4xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">About EduPulse Feedback System</h1>
-          <p className="text-xl opacity-80">
-            Revolutionizing educational feedback collection and analysis
-          </p>
+    <div className="min-h-screen bg-slate-950 text-white">
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute -top-24 -right-32 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
+          <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
         </div>
-
-        {/* Mission Section */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Our Mission</h2>
-          <p className="text-lg leading-relaxed mb-4">
-            EduPulse is designed to bridge the communication gap between students, educators, and 
-            administrators by providing a comprehensive, real-time feedback collection and analysis 
-            platform. We believe that constructive feedback is the cornerstone of educational 
-            excellence and continuous improvement.
-          </p>
-        </div>
-
-        {/* System Overview */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">System Overview</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-3">Real-Time Feedback Collection</h3>
-              <p className="mb-4">
-                Our system enables instant feedback submission through multiple channels including 
-                web forms, mobile applications, and QR code scanning. Students can provide 
-                anonymous or identified feedback on courses, instructors, facilities, and overall 
-                educational experience.
+        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <div className="mb-6 flex flex-wrap gap-2 text-xs uppercase tracking-widest text-white/70">
+                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Student</span>
+                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Teacher</span>
+                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Admin</span>
+              </div>
+              <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+                About EduFeed Feedback System
+              </h1>
+              <p className="mt-6 text-lg text-white/80">
+                Built to capture meaningful feedback, analyze it with AI/ML, and deliver insights
+                that help students, teachers, and administrators move faster together.
               </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  to="/register"
+                  className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  to="/login"
+                  className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
+                >
+                  Login
+                </Link>
+              </div>
             </div>
-            
-            <div className="p-6 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-3">Advanced Analytics Dashboard</h3>
-              <p className="mb-4">
-                Powerful analytics engine processes feedback data to generate actionable insights. 
-                Visual reports, trend analysis, and predictive modeling help administrators make 
-                data-driven decisions for continuous improvement.
-              </p>
-            </div>
-            
-            <div className="p-6 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-3">Multi-Stakeholder Platform</h3>
-              <p className="mb-4">
-                Designed for students, faculty, staff, and administrators with role-based access 
-                control. Each stakeholder group has tailored interfaces and permissions to ensure 
-                relevant and secure interactions.
-              </p>
-            </div>
-            
-            <div className="p-6 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-3">AI-Powered Insights</h3>
-              <p className="mb-4">
-                Machine learning algorithms analyze feedback patterns to identify emerging issues, 
-                predict potential problems, and suggest proactive interventions before they become 
-                critical concerns.
-              </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {stats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
+                >
+                  <div className="text-3xl font-semibold">{stat.value}</div>
+                  <div className="mt-2 text-sm uppercase tracking-widest text-white/60">
+                    {stat.label}
+                  </div>
+                  <div className="mt-3 text-sm text-white/70">{stat.detail}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Key Features */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Key Features</h2>
-          <div className="space-y-6">
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                <span className="text-white font-bold">1</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Anonymous & Identified Feedback</h3>
-                <p>Flexible feedback options allowing both anonymous submissions for sensitive topics 
-                and identified submissions for follow-up communications.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                <span className="text-white font-bold">2</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Multi-Channel Access</h3>
-                <p>Accessible via web browsers, mobile apps, email integration, and SMS for maximum 
-                accessibility across different user preferences and technological capabilities.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                <span className="text-white font-bold">3</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Real-Time Notifications</h3>
-                <p>Instant alerts for critical feedback, scheduled digest reports, and customizable 
-                notification preferences for different stakeholder groups.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                <span className="text-white font-bold">4</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Comprehensive Reporting</h3>
-                <p>Detailed analytics including sentiment analysis, trend identification, comparative 
-                benchmarking, and customizable report generation for different time periods.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Technical Architecture */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Technical Architecture</h2>
-          <div className="p-6 rounded-lg bg-white shadow-lg">
-            <h3 className="text-xl font-semibold mb-4">Modern Technology Stack</h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold mb-2">Frontend</h4>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>React.js with TypeScript for robust user interfaces</li>
-                  <li>Tailwind CSS for responsive and modern design</li>
-                  <li>Dark mode support for accessibility and user preference</li>
-                  <li>Progressive Web App (PWA) capabilities</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">Backend</h4>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Node.js with Express.js for scalable API services</li>
-                  <li>MongoDB for flexible and scalable data storage</li>
-                  <li>JWT authentication for secure user sessions</li>
-                  <li>RESTful API design for system integration</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Data Security & Privacy */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Data Security & Privacy</h2>
-          <div className="p-6 rounded-lg bg-white shadow-lg">
-            <p className="mb-4">
-              EduPulse prioritizes data security and user privacy with enterprise-grade encryption, 
-              GDPR compliance, and regular security audits. All feedback data is encrypted at rest 
-              and in transit, with role-based access control ensuring users only access 
-              appropriate information.
+      <section className="bg-white py-16 text-slate-900">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl font-bold sm:text-4xl">What the system actually delivers</h2>
+            <p className="mt-4 text-lg text-slate-600">
+              Every part of the platform maps to real workflows already available in the system,
+              from structured student submissions to AI/ML insights in teacher and admin views.
             </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>End-to-end encryption for all communications</li>
-              <li>Regular security audits and penetration testing</li>
-              <li>GDPR and privacy law compliance</li>
-              <li>Data retention policies with automatic purging</li>
-              <li>Anonymous feedback options to protect user identity</li>
-            </ul>
+          </div>
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {capabilities.map((item) => (
+              <div key={item.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="mt-3 text-sm text-slate-600">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Future Roadmap */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Future Roadmap</h2>
-          <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-2">Phase 2: Advanced Analytics</h3>
-              <p>Integration of natural language processing for deeper sentiment analysis and 
-              predictive modeling for proactive issue identification.</p>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-2">Phase 3: Mobile App</h3>
-              <p>Native mobile applications for iOS and Android with offline capabilities and 
-              push notifications for enhanced user engagement.</p>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-2">Phase 4: Integration Hub</h3>
-              <p>Seamless integration with existing Learning Management Systems (LMS), 
-              Student Information Systems (SIS), and other educational technology platforms.</p>
-            </div>
+      <section className="bg-slate-100 py-16 text-slate-900">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl font-bold sm:text-4xl">Feedback journey</h2>
+            <p className="mt-4 text-lg text-slate-600">
+              A clean, end-to-end flow that turns student input into real action.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {steps.map((step, index) => (
+              <div key={step.title} className="rounded-2xl bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="text-lg font-semibold">{step.title}</h3>
+                </div>
+                <p className="text-sm text-slate-600">{step.detail}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Contact Information */}
-        <div className="text-center">
-          <h2 className="text-3xl font-semibold mb-6">Get In Touch</h2>
-          <p className="text-lg mb-4">
-            Have questions or want to learn more about EduPulse? We'd love to hear from you!
-          </p>
-          <div className="flex justify-center space-x-4">
-            <a href="mailto:info@edupulse.com" className="text-blue-500 hover:underline">
-              contact@edupulse.com
-            </a>
-            <span className="opacity-50">|</span>
-            <a href="tel:+1-555-EDU-PULSE" className="text-blue-500 hover:underline">
-              +234-567-8901
-            </a>
+      <section className="bg-white py-16 text-slate-900">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl font-bold sm:text-4xl">Designed for every role</h2>
+            <p className="mt-4 text-lg text-slate-600">
+              Each dashboard focuses on what matters most for that user group.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {roles.map((role) => (
+              <div key={role.title} className="rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div className={`h-2 w-16 rounded-full ${role.accent}`} />
+                <h3 className="mt-4 text-xl font-semibold">{role.title}</h3>
+                <p className="mt-3 text-sm text-slate-600">{role.description}</p>
+                <div className="mt-5 space-y-3 text-sm text-slate-700">
+                  {role.bullets.map((bullet) => (
+                    <div key={bullet} className="flex items-start gap-2">
+                      <span className={`mt-2 h-2 w-2 rounded-full ${role.accent}`} />
+                      <span>{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      <section className="bg-slate-900 py-16">
+        <div className="mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div>
+            <h2 className="text-3xl font-bold sm:text-4xl">Ready to explore the system?</h2>
+            <p className="mt-3 text-lg text-white/70">
+              Create an account or sign in to see the dashboards and feedback flows in action.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/register"
+              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+            >
+              Create Account
+            </Link>
+            <Link
+              to="/login"
+              className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
+            >
+              Login
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
