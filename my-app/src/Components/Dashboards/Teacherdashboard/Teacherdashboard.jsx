@@ -17,6 +17,146 @@ import {
 } from "recharts";
 
 const COLORS = ["#4CAF50", "#FFC107", "#F44336"];
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_MODEL = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_ENDPOINT = GEMINI_MODEL
+  ? `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
+  : "";
+const GEMINI_MAX_FEEDBACK = 20;
+const GEMINI_ONLY = true;
+const GEMINI_JSON_SCHEMA = {
+  type: "object",
+  properties: {
+    summary: { type: "string" },
+    improvementAreas: {
+      type: "array",
+      items: { type: "string" },
+    },
+  },
+  required: ["summary", "improvementAreas"],
+};
+const GEMINI_SYSTEM_INSTRUCTION = [
+  "You are an education analyst. Use ONLY the student feedback text to identify areas the teacher should improve in their teaching.",
+  "Do not mention the system/platform. Do not invent issues that are not supported by the feedback.",
+  "Return ONLY valid JSON in this format:",
+  '{ "summary": "string", "improvementAreas": ["string", "string", "string"] }',
+  "Rules:",
+  "- Summary should be 3 to 5 sentences.",
+  "- Improvement areas should be short, actionable phrases (3 to 5 items).",
+  "- Always provide improvement areas even if feedback is positive (give growth opportunities).",
+  "- Never return empty fields.",
+  "- Do not include markdown or code fences.",
+].join("\n");
+
+const buildGeminiPrompt = ({ feedbacks, teacherName }) => {
+  const feedbackSnippets = (feedbacks || [])
+    .flatMap((fb) => Object.entries(fb?.responses || {}))
+    .filter(([, val]) => typeof val === "string" && val.trim().length > 0)
+    .map(([key, val]) => `${key}: ${val.replace(/\s+/g, " ").trim()}`)
+    .slice(0, GEMINI_MAX_FEEDBACK);
+
+  return [
+    `Teacher: ${teacherName || "Unknown"}`,
+    `Feedback items provided: ${feedbackSnippets.length}`,
+    "Student feedback about teaching:",
+    feedbackSnippets.length > 0 ? feedbackSnippets.map((t) => `- ${t}`).join("\n") : "- none",
+  ].join("\n");
+};
+
+const parseGeminiJson = (text) => {
+  if (!text) return null;
+  const cleaned = text.replace(/```json|```/g, "").trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // fall through to best-effort extraction
+  }
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  try {
+    return JSON.parse(match[0]);
+  } catch {
+    return null;
+  }
+};
+
+const normalizeGeminiOutput = (parsed) => {
+  if (!parsed || typeof parsed !== "object") return null;
+  const summary = typeof parsed.summary === "string" ? parsed.summary.trim() : "";
+  const improvementAreasRaw = Array.isArray(parsed.improvementAreas)
+    ? parsed.improvementAreas
+    : Array.isArray(parsed.areas)
+    ? parsed.areas
+    : [];
+  const improvementAreas = improvementAreasRaw
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean);
+
+  if (!summary && improvementAreas.length === 0) return null;
+  return { summary, improvementAreas };
+};
+
+const callGemini = async (body) => {
+  const response = await fetch(GEMINI_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": GEMINI_API_KEY,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || response.statusText);
+  }
+
+  const data = await response.json();
+  return (data?.candidates || [])
+    .flatMap((candidate) => candidate?.content?.parts || [])
+    .map((part) => part?.text || "")
+    .join("")
+    .trim();
+};
+
+const requestGeminiInsights = async (context) => {
+  if (!GEMINI_API_KEY || !GEMINI_ENDPOINT) return null;
+
+  const prompt = buildGeminiPrompt(context);
+  const baseBody = {
+    systemInstruction: { parts: [{ text: GEMINI_SYSTEM_INSTRUCTION }] },
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    generationConfig: {
+      temperature: 0.3,
+      maxOutputTokens: 1024,
+    },
+  };
+
+  let outputText = "";
+  try {
+    outputText = await callGemini({
+      ...baseBody,
+      generationConfig: {
+        ...baseBody.generationConfig,
+        responseMimeType: "application/json",
+        responseJsonSchema: GEMINI_JSON_SCHEMA,
+      },
+    });
+  } catch (schemaError) {
+    outputText = await callGemini(baseBody);
+  }
+
+  if (!outputText) return null;
+
+  const parsed = normalizeGeminiOutput(parseGeminiJson(outputText));
+  if (parsed) return parsed;
+
+  if (outputText.trim().startsWith("{")) {
+    throw new Error("Gemini returned incomplete JSON.");
+  }
+
+  return { summary: outputText, improvementAreas: [] };
+};
 
 const Teacherdashboard = ({ user }) => {
   const [sentimentStats, setSentimentStats] = useState({
@@ -28,6 +168,8 @@ const Teacherdashboard = ({ user }) => {
   const [recentFeedback, setRecentFeedback] = useState([]);
   const [improvementAreas, setImprovementAreas] = useState([]);
   const [aiSummary, setAiSummary] = useState("");
+  const [aiStatus, setAiStatus] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showReport, setShowReport] = useState(false);
@@ -62,26 +204,68 @@ const Teacherdashboard = ({ user }) => {
         const data = await res.json();
         const sentiment = data.sentimentStats || data;
 
-        setSentimentStats({
+        const sentimentPayload = {
           positive: sentiment.positive ?? 0,
           neutral: sentiment.neutral ?? 0,
           negative: sentiment.negative ?? 0,
-        });
-        setTotalFeedback(data.totalFeedback ?? data.total ?? 0);
-        setRecentFeedback(data.feedbacks || data.recentFeedback || data.recentFeedbacks || []);
-        
-        const improvementData = data.improvementAreas || data.areasForImprovement || [];
-        if (improvementData.length > 0 && improvementData[0].includes("Not enough data for analysis")) {
-          setImprovementAreas([]);
-          setAiSummary("AI summary requires more feedback data for a complete analysis.");
-        } else {
-          setImprovementAreas(improvementData);
-          setAiSummary(data.summary || data.aiSummary || data.analysisSummary || "AI summary unavailable.");
-        }
+        };
+        const feedbackTotal = data.totalFeedback ?? data.total ?? 0;
+        const feedbackList = data.feedbacks || data.recentFeedback || data.recentFeedbacks || [];
+        const trendPayload = data.monthlyTrend || data.trend || [];
 
-        setMonthlyTrend(data.monthlyTrend || data.trend || []); // Use trend from backend
+        setSentimentStats(sentimentPayload);
+        setTotalFeedback(feedbackTotal);
+        setRecentFeedback(feedbackList);
+        setImprovementAreas([]);
+        setAiSummary("");
+
+        setMonthlyTrend(trendPayload); // Use trend from backend
 
         setLoading(false);
+
+        if (!GEMINI_API_KEY) {
+          setAiStatus("Gemini API key not configured. Add VITE_GEMINI_API_KEY to generate insights.");
+          setImprovementAreas([]);
+          setAiSummary("");
+          return;
+        }
+
+        if (!Array.isArray(feedbackList) || feedbackList.length === 0) {
+          setAiStatus("More feedback is needed to generate Gemini insights.");
+          setImprovementAreas([]);
+          setAiSummary("");
+          return;
+        }
+
+        setAiLoading(true);
+        setAiStatus("Generating insights with Gemini...");
+        try {
+          const geminiInsights = await requestGeminiInsights({
+            feedbacks: feedbackList,
+            teacherName: user || "Teacher",
+          });
+
+          const hasSummary = Boolean(geminiInsights?.summary);
+          const hasAreas =
+            Array.isArray(geminiInsights?.improvementAreas) &&
+            geminiInsights.improvementAreas.length > 0;
+
+          setAiSummary(hasSummary ? geminiInsights.summary : "");
+          setImprovementAreas(hasAreas ? geminiInsights.improvementAreas : []);
+
+          setAiStatus(
+            hasSummary || hasAreas
+              ? "Generated with Gemini."
+              : "Gemini returned no usable insights."
+          );
+        } catch (geminiError) {
+          console.log(geminiError);
+          setAiStatus("Gemini response was incomplete or unavailable. Please try again.");
+          setAiSummary("");
+          setImprovementAreas([]);
+        } finally {
+          setAiLoading(false);
+        }
 
       } catch (err) {
         console.log(err);
@@ -108,6 +292,8 @@ const Teacherdashboard = ({ user }) => {
     negative_percent: 10,
     aoi_points: `- Improve lesson pacing and structure\n- Add more interactive sessions\n- Use more real-world examples`
   };
+
+  const resolvedImprovementAreas = improvementAreas;
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -212,16 +398,30 @@ const Teacherdashboard = ({ user }) => {
                     Areas for Improvement
                   </h2>
 
-                  {improvementAreas.length === 0 ? (
-                    <p className="text-gray-500">No improvement areas available.</p>
+                  {aiLoading && (
+                    <p className="text-xs text-gray-500 mb-3">
+                      Updating improvement areas with Gemini...
+                    </p>
+                  )}
+
+                  {resolvedImprovementAreas.length === 0 ? (
+                    <p className="text-gray-500">
+                      {GEMINI_ONLY
+                        ? aiLoading
+                          ? "Generating improvement areas with Gemini..."
+                          : "Gemini improvement areas not available yet."
+                        : "Not enough data to generate improvement areas yet."}
+                    </p>
                   ) : (
-                    <ul className="space-y-3">
-                      {improvementAreas.map((a, i) => (
-                        <li key={i} className="bg-gray-200 dark:bg-gray-700 p-3 rounded flex justify-between">
-                          <span>{a}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <>
+                      <ul className="space-y-3">
+                        {resolvedImprovementAreas.map((a, i) => (
+                          <li key={i} className="bg-gray-200 dark:bg-gray-700 p-3 rounded flex justify-between">
+                            <span>{a}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
                   )}
                 </div>
 
@@ -264,8 +464,18 @@ const Teacherdashboard = ({ user }) => {
                   <h2 className="text-2xl font-semibold mb-4">
                     AI Summary
                   </h2>
+                  {aiStatus && (
+                    <p className="text-xs text-gray-500 mb-2">
+                      {aiStatus}
+                    </p>
+                  )}
                   <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                    {aiSummary}
+                    {aiSummary ||
+                      (GEMINI_ONLY
+                        ? aiLoading
+                          ? "Generating summary with Gemini..."
+                          : "Gemini summary not available yet."
+                        : "AI summary unavailable.")}
                   </p>
                 </div>
               </>
