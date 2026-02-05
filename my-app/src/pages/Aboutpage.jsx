@@ -5,7 +5,7 @@ const Aboutpage = () => {
   const stats = [
     { label: 'Feedback Areas', value: '3', detail: 'Teacher, Hostel, Campus' },
     { label: 'Dashboards', value: '3', detail: 'Student, Teacher, Admin' },
-    { label: 'Learner Filters', value: '2', detail: 'Fast and Slow Learner' },
+    { label: 'Reports', value: 'PDF', detail: 'Teacher improvement reports' },
     { label: 'Insights', value: 'AI/ML', detail: 'Sentiment, trends, summaries' }
   ]
 
@@ -31,9 +31,9 @@ const Aboutpage = () => {
         'Teachers see trends, improvement areas, and AI summaries to guide better outcomes.'
     },
     {
-      title: 'Learner-Type Filters',
+      title: 'Teacher Reports',
       description:
-        'Compare feedback from Fast Learner and Slow Learner groups for more precise insights.'
+        'Generate improvement reports to share highlights and next steps.'
     },
     {
       title: 'Admin Oversight',
@@ -76,11 +76,11 @@ const Aboutpage = () => {
     {
       title: 'Teachers',
       description:
-        'Understand sentiment, trends, and learning-type differences to improve outcomes.',
+        'Understand sentiment, trends, and improvement areas to improve outcomes.',
       bullets: [
         'Sentiment distribution and monthly trends',
         'AI-generated summaries and improvement areas',
-        'Fast Learner and Slow Learner filters'
+        'Downloadable improvement reports'
       ],
       accent: 'bg-emerald-500'
     },

@@ -7,10 +7,6 @@ const TeachingImprovementReport = ({
   positive_percent,
   neutral_percent,
   negative_percent,
-  fast_positive_points,
-  fast_negative_points,
-  slow_positive_points,
-  slow_negative_points,
   aoi_points,
 }) => {
   const reportRef = useRef();
@@ -92,88 +88,17 @@ const TeachingImprovementReport = ({
           </div>
         </div>
 
-        {/* 2. Learning Pace Analysis (Table) */}
+        {/* 2. Areas of Improvement */}
         <div className="mb-10 relative z-10">
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: '#1f2937' }}>
-            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#f3e8ff', color: '#9333ea' }}>2</span>
-            Learning-Pace Based Feedback Analysis
-          </h3>
-          <div className="overflow-hidden rounded-xl" style={{ border: '1px solid #e5e7eb', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}>
-            <table className="min-w-full" style={{ borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb' }}>
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider w-1/5" style={{ color: '#6b7280', borderBottom: '1px solid #e5e7eb' }}>Learner Group</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider w-2/5" style={{ color: '#16a34a', borderBottom: '1px solid #e5e7eb' }}>Positive Themes</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider w-2/5" style={{ color: '#dc2626', borderBottom: '1px solid #e5e7eb' }}>Negative Themes</th>
-                </tr>
-              </thead>
-              <tbody style={{ backgroundColor: '#ffffff' }}>
-                <tr>
-                  <td className="px-6 py-6 whitespace-nowrap" style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full" style={{ backgroundColor: '#dbeafe', color: '#1e40af' }}>
-                      Fast Learners
-                    </span>
-                  </td>
-                  <td className="px-6 py-6 align-top" style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <ul className="space-y-2">
-                      {parseList(fast_positive_points).map((point, i) => (
-                        <li key={i} className="flex items-start text-sm" style={{ color: '#374151' }}>
-                          <span className="mr-2" style={{ color: '#22c55e' }}>✓</span> {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="px-6 py-6 align-top" style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <ul className="space-y-2">
-                      {parseList(fast_negative_points).map((point, i) => (
-                        <li key={i} className="flex items-start text-sm" style={{ color: '#374151' }}>
-                          <span className="mr-2" style={{ color: '#ef4444' }}>⚠</span> {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                </tr>
-                <tr style={{ backgroundColor: '#f9fafb' }}>
-                  <td className="px-6 py-6 whitespace-nowrap" style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full" style={{ backgroundColor: '#ffedd5', color: '#9a3412' }}>
-                      Slow Learners
-                    </span>
-                  </td>
-                  <td className="px-6 py-6 align-top" style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <ul className="space-y-2">
-                      {parseList(slow_positive_points).map((point, i) => (
-                        <li key={i} className="flex items-start text-sm" style={{ color: '#374151' }}>
-                          <span className="mr-2" style={{ color: '#22c55e' }}>✓</span> {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="px-6 py-6 align-top" style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <ul className="space-y-2">
-                      {parseList(slow_negative_points).map((point, i) => (
-                        <li key={i} className="flex items-start text-sm" style={{ color: '#374151' }}>
-                          <span className="mr-2" style={{ color: '#ef4444' }}>⚠</span> {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* 3. Areas of Improvement */}
-        <div className="mb-10 relative z-10">
-          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: '#1f2937' }}>
-            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ffedd5', color: '#ea580c' }}>3</span>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ffedd5', color: '#ea580c' }}>2</span>
             Areas for Improvement
           </h3>
           <div className="rounded-xl p-6" style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5' }}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {parseList(aoi_points).map((point, i) => (
                 <div key={i} className="flex items-start p-3 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ffedd5', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}>
-                  <span className="text-xl mr-3" style={{ color: '#f97316' }}>•</span>
+                  <span className="text-xl mr-3" style={{ color: '#f97316' }}>-</span>
                   <span className="font-medium" style={{ color: '#374151' }}>{point}</span>
                 </div>
               ))}
@@ -181,16 +106,16 @@ const TeachingImprovementReport = ({
           </div>
         </div>
 
-        {/* 4. Actionable Recommendations */}
+        {/* 3. Actionable Recommendations */}
         <div className="relative z-10">
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: '#1f2937' }}>
-            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ccfbf1', color: '#0d9488' }}>4</span>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ccfbf1', color: '#0d9488' }}>3</span>
             Actionable Recommendations
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-xl transition" style={{ backgroundColor: '#ffffff', borderTop: '4px solid #14b8a6', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
               <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>Differentiated Instruction</h4>
-              <p className="text-sm" style={{ color: '#4b5563' }}>Implement tiered assignments to challenge fast learners while providing scaffolding for slow learners.</p>
+              <p className="text-sm" style={{ color: '#4b5563' }}>Use tiered activities so every student can engage at the right level.</p>
             </div>
             <div className="p-6 rounded-xl transition" style={{ backgroundColor: '#ffffff', borderTop: '4px solid #3b82f6', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
               <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>Interactive Pacing</h4>
@@ -198,7 +123,7 @@ const TeachingImprovementReport = ({
             </div>
             <div className="p-6 rounded-xl transition" style={{ backgroundColor: '#ffffff', borderTop: '4px solid #a855f7', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
               <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>Real-world Application</h4>
-              <p className="text-sm" style={{ color: '#4b5563' }}>Integrate more case studies and industry examples to increase engagement for all learner types.</p>
+              <p className="text-sm" style={{ color: '#4b5563' }}>Integrate more case studies and industry examples to increase engagement.</p>
             </div>
           </div>
         </div>
@@ -213,3 +138,4 @@ const TeachingImprovementReport = ({
 };
 
 export default TeachingImprovementReport;
+

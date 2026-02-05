@@ -16,7 +16,6 @@ const AdminDashboard = ({ isDarkMode }) => {
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const [learningTypeFilter, setLearningTypeFilter] = useState("All");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -170,15 +169,6 @@ const AdminDashboard = ({ isDarkMode }) => {
     );
   }
 
-  const filterFeedback = (feedback) => {
-    if (learningTypeFilter === 'All') return feedback;
-    return feedback.filter(fb => fb.learningType === learningTypeFilter);
-  };
-
-  const filteredTeacherFeedback = filterFeedback(stats.teacherFeedback);
-  const filteredHostelFeedback = filterFeedback(stats.hostelFeedback);
-  const filteredCampusFeedback = filterFeedback(stats.campusFeedback);
-
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <header className={`shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
@@ -241,40 +231,6 @@ const AdminDashboard = ({ isDarkMode }) => {
         <div className="px-4 py-6 sm:px-0">
           {activeTab === 'overview' && (
             <>
-              {/* LEARNER TYPE FILTER */}
-              <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-                <button
-                  onClick={() => setLearningTypeFilter("All")}
-                  className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
-                    learningTypeFilter === "All"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                  }`}
-                >
-                  All Students
-                </button>
-                <button
-                  onClick={() => setLearningTypeFilter("Fast Learner")}
-                  className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
-                    learningTypeFilter === "Fast Learner"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                  }`}
-                >
-                  Fast Learners
-                </button>
-                <button
-                  onClick={() => setLearningTypeFilter("Slow Learner")}
-                  className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
-                    learningTypeFilter === "Slow Learner"
-                      ? "bg-yellow-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                  }`}
-                >
-                  Slow Learners
-                </button>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                   <h3 className="text-lg font-semibold mb-2">Students with Feedback</h3>
@@ -337,11 +293,11 @@ const AdminDashboard = ({ isDarkMode }) => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                   <h3 className="text-xl font-semibold mb-4">Teacher Feedback</h3>
-                    {(filteredTeacherFeedback.length === 0) ? (
+                    {(stats.teacherFeedback.length === 0) ? (
                       <p className="text-gray-500">No teacher feedback available</p>
                     ) : (
                       <div className="space-y-4 max-h-96 overflow-y-auto">
-                        {filteredTeacherFeedback.map((feedback, index) => (
+                        {stats.teacherFeedback.map((feedback, index) => (
                           <div key={index} className={`p-4 rounded-md ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                             <div className="flex justify-between items-start mb-2">
                               <span className="font-medium">{feedback?.userId?.username || 'Unknown User'}</span>
@@ -364,11 +320,11 @@ const AdminDashboard = ({ isDarkMode }) => {
 
                 <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                   <h3 className="text-xl font-semibold mb-4">Hostel Feedback</h3>
-                    {(filteredHostelFeedback.length === 0) ? (
+                    {(stats.hostelFeedback.length === 0) ? (
                       <p className="text-gray-500">No hostel feedback available</p>
                     ) : (
                       <div className="space-y-4 max-h-96 overflow-y-auto">
-                        {filteredHostelFeedback.map((feedback, index) => (
+                        {stats.hostelFeedback.map((feedback, index) => (
                           <div key={index} className={`p-4 rounded-md ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                             <div className="flex justify-between items-start mb-2">
                               <span className="font-medium">{feedback?.userId?.username || 'Unknown User'}</span>
@@ -391,11 +347,11 @@ const AdminDashboard = ({ isDarkMode }) => {
 
                 <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                   <h3 className="text-xl font-semibold mb-4">Campus Feedback</h3>
-                    {(filteredCampusFeedback.length === 0) ? (
+                    {(stats.campusFeedback.length === 0) ? (
                       <p className="text-gray-500">No campus feedback available</p>
                     ) : (
                       <div className="space-y-4 max-h-96 overflow-y-auto">
-                        {filteredCampusFeedback.map((feedback, index) => (
+                        {stats.campusFeedback.map((feedback, index) => (
                           <div key={index} className={`p-4 rounded-md ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                             <div className="flex justify-between items-start mb-2">
                               <span className="font-medium">{feedback?.userId?.username || 'Unknown User'}</span>

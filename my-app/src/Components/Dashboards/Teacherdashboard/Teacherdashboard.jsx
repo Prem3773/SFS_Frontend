@@ -29,56 +29,69 @@ const Teacherdashboard = ({ user }) => {
   const [improvementAreas, setImprovementAreas] = useState([]);
   const [aiSummary, setAiSummary] = useState("");
   const [totalFeedback, setTotalFeedback] = useState(0);
-  const [learningTypeFilter, setLearningTypeFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [showReport, setShowReport] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     document.title = "EduFeed";
     const fetchTeacherStats = async () => {
       try {
         setLoading(true);
+        setError("");
         const token = localStorage.getItem("token");
-        
-        // Append learningType to query if it's not "All"
-        const url = new URL("https://feedback-system-1-0sp1.onrender.com/api/feedback/teacher/stats");
-        if (learningTypeFilter !== "All") {
-          url.searchParams.append("learningType", learningTypeFilter);
+        if (!token) {
+          setError("No auth token found. Please log in again.");
+          setLoading(false);
+          return;
         }
+        
+        const url = new URL("https://feedback-system-1-0sp1.onrender.com/api/feedback/teacher/stats");
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) {
-          console.error('Failed to fetch teacher stats:', res.status, res.statusText);
+          const text = await res.text();
+          setError(`Teacher stats failed (${res.status}). ${text || res.statusText}`);
           setLoading(false);
           return;
         }
 
         const data = await res.json();
+        const sentiment = data.sentimentStats || data;
 
         setSentimentStats({
-          positive: data.positive,
-          neutral: data.neutral,
-          negative: data.negative,
+          positive: sentiment.positive ?? 0,
+          neutral: sentiment.neutral ?? 0,
+          negative: sentiment.negative ?? 0,
         });
-        setTotalFeedback(data.totalFeedback);
-        setRecentFeedback(data.feedbacks || []); // Now contains only 5 recent
-        setImprovementAreas(data.improvementAreas || []);
-        setAiSummary(data.summary || "AI summary unavailable.");
-        setMonthlyTrend(data.monthlyTrend || []); // Use trend from backend
+        setTotalFeedback(data.totalFeedback ?? data.total ?? 0);
+        setRecentFeedback(data.feedbacks || data.recentFeedback || data.recentFeedbacks || []);
+        
+        const improvementData = data.improvementAreas || data.areasForImprovement || [];
+        if (improvementData.length > 0 && improvementData[0].includes("Not enough data for analysis")) {
+          setImprovementAreas([]);
+          setAiSummary("AI summary requires more feedback data for a complete analysis.");
+        } else {
+          setImprovementAreas(improvementData);
+          setAiSummary(data.summary || data.aiSummary || data.analysisSummary || "AI summary unavailable.");
+        }
+
+        setMonthlyTrend(data.monthlyTrend || data.trend || []); // Use trend from backend
 
         setLoading(false);
 
       } catch (err) {
         console.log(err);
+        setError("Network/CORS error while fetching teacher stats.");
         setLoading(false);
       }
     };
 
     fetchTeacherStats();
-  }, [learningTypeFilter]);
+  }, []);
 
   const barData = [
     {
@@ -93,11 +106,7 @@ const Teacherdashboard = ({ user }) => {
     positive_percent: 75,
     neutral_percent: 15,
     negative_percent: 10,
-    fast_positive_points: `- In-depth explanations\n- Challenging assignments`,
-    fast_negative_points: `- Pace can be slow at times\n- Lack of advanced topics`,
-    slow_positive_points: `- Clear and patient explanations\n- Willingness to re-explain concepts`,
-    slow_negative_points: `- Pace can be too fast\n- Assumes prior knowledge`,
-    aoi_points: `- Pacing of the class to suit all learners\n- More interactive sessions\n- Use of more real-world examples`
+    aoi_points: `- Improve lesson pacing and structure\n- Add more interactive sessions\n- Use more real-world examples`
   };
 
   return (
@@ -128,47 +137,17 @@ const Teacherdashboard = ({ user }) => {
           <TeachingImprovementReport {...reportData} teacherName={user || "Teacher"} />
         ) : (
           <>
-            {/* LEARNER TYPE FILTER */}
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              <button
-                onClick={() => setLearningTypeFilter("All")}
-                className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
-                  learningTypeFilter === "All"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                }`}
-              >
-                All Students
-              </button>
-              <button
-                onClick={() => setLearningTypeFilter("Fast Learner")}
-                className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
-                  learningTypeFilter === "Fast Learner"
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                }`}
-              >
-                Fast Learners
-              </button>
-              <button
-                onClick={() => setLearningTypeFilter("Slow Learner")}
-                className={`w-full sm:w-auto px-4 py-2 rounded-md font-semibold ${
-                  learningTypeFilter === "Slow Learner"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                }`}
-              >
-                Slow Learners
-              </button>
-            </div>
-
             {loading ? (
               <div className="text-center text-gray-500 dark:text-gray-300">
                 Loading...
               </div>
+            ) : error ? (
+              <div className="text-center text-red-600 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                {error}
+              </div>
             ) : totalFeedback === 0 ? (
               <div className="text-center text-gray-500 dark:text-gray-300 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                No feedback found for "{learningTypeFilter}" students.
+                No feedback found yet.
               </div>
             ) : (
               <>
@@ -230,7 +209,7 @@ const Teacherdashboard = ({ user }) => {
                 {/* IMPROVEMENT AREAS */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6">
                   <h2 className="text-2xl font-semibold mb-4">
-                    Areas for Improvement (Based on {learningTypeFilter} Feedback)
+                    Areas for Improvement
                   </h2>
 
                   {improvementAreas.length === 0 ? (
@@ -256,11 +235,11 @@ const Teacherdashboard = ({ user }) => {
                       {recentFeedback.map((fb) => (
                         <li key={fb._id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                           <p className="text-gray-800 dark:text-gray-200">
-                            {fb.responses.additionalComments}
+                            {fb?.responses?.additionalComments || "No comments provided."}
                           </p>
                           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mt-2">
                             <span className="text-sm text-gray-500 dark:text-gray-400">
-                              - {fb.userId.username}
+                              - {fb?.userId?.username || "Unknown user"}
                             </span>
                             <span
                               className={`text-sm font-semibold ${
@@ -283,7 +262,7 @@ const Teacherdashboard = ({ user }) => {
                 {/* AI SUMMARY */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6 mb-10">
                   <h2 className="text-2xl font-semibold mb-4">
-                    🤖 AI Summary (Based on {learningTypeFilter} Feedback)
+                    AI Summary
                   </h2>
                   <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
                     {aiSummary}

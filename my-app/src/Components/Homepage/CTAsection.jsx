@@ -5,7 +5,7 @@ const CTAsection = () => {
    const stats = [
     { label: 'Feedback Areas', value: '3', detail: 'Teacher, Hostel, Campus' },
     { label: 'Dashboards', value: '3', detail: 'Student, Teacher, Admin' },
-    { label: 'Learner Filters', value: '2', detail: 'Fast and Slow Learner' },
+    { label: 'Reports', value: 'PDF', detail: 'Teacher improvement reports' },
     { label: 'Insights', value: 'AI/ML', detail: 'Sentiment, trends, summaries' }
   ]
 
@@ -31,9 +31,9 @@ const CTAsection = () => {
         'Teachers see trends, improvement areas, and AI summaries to guide better outcomes.'
     },
     {
-      title: 'Learner-Type Filters',
+      title: 'Teacher Reports',
       description:
-        'Compare feedback from Fast Learner and Slow Learner groups for more precise insights.'
+        'Generate improvement reports to share highlights and next steps.'
     },
     {
       title: 'Admin Oversight',
@@ -76,11 +76,11 @@ const CTAsection = () => {
     {
       title: 'Teachers',
       description:
-        'Understand sentiment, trends, and learning-type differences to improve outcomes.',
+        'Understand sentiment, trends, and improvement areas to improve outcomes.',
       bullets: [
         'Sentiment distribution and monthly trends',
         'AI-generated summaries and improvement areas',
-        'Fast Learner and Slow Learner filters'
+        'Downloadable improvement reports'
       ],
       accent: 'bg-emerald-500'
     },
@@ -123,11 +123,11 @@ const CTAsection = () => {
                     <div className="absolute -top-24 -right-32 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
                     <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
                   </div>
-                  <div className="relative max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+                  <div className="relative max-w-10xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
               <div className="grid items-start justify-items-start gap-12 lg:grid-cols-2">
 
                       <div>
-                        <div className="mb-6 flex flex-wrap gap-2 text-xs uppercase tracking-widest text-white/70">
+                        <div className="mb-6 ml-44 flex  items-center flex-wrap gap-2 text-xs uppercase tracking-widest text-white/70">
                           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Student</span>
                           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Teacher</span>
                           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Admin</span>
@@ -139,7 +139,7 @@ const CTAsection = () => {
                           Built to capture meaningful feedback, analyze it with AI/ML, and deliver insights
                           that help students, teachers, and administrators move faster together.
                         </p>
-                        <div className="mt-8 ml-9 flex flex-wrap gap-3">
+                        <div className="mt-8 ml-48 flex flex-wrap gap-3">
                           <Link
                             to="/register"
                             className="rounded-full bg-white px-12 py-6 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
