@@ -101,14 +101,42 @@ const Teacherdashboard = ({ user }) => {
     },
   ];
 
+  const totalSentiments =
+    sentimentStats.positive + sentimentStats.neutral + sentimentStats.negative;
+  const toPercent = (value) =>
+    totalSentiments > 0 ? Math.round((value / totalSentiments) * 100) : 0;
+
+  const cleanedImprovementAreas = (improvementAreas || [])
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean);
+
+  const normalizedSummary = (aiSummary || "").trim();
+  const summaryIsUseful =
+    normalizedSummary &&
+    !/unavailable|no feedback|not available/i.test(normalizedSummary);
+  const summarySentences = summaryIsUseful
+    ? normalizedSummary
+        .replace(/\s+/g, " ")
+        .split(/[\.\!\?]\s+/)
+        .map((sentence) => sentence.trim())
+        .filter(Boolean)
+    : [];
+
+  const derivedRecommendations = cleanedImprovementAreas.length
+    ? cleanedImprovementAreas.slice(0, 3)
+    : summarySentences.slice(0, 3);
+
   const reportData = {
-    positive_percent: 75,
-    neutral_percent: 15,
-    negative_percent: 10,
-    aoi_points: `- Improve lesson pacing and structure\n- Add more interactive sessions\n- Use more real-world examples`
+    positive_percent: toPercent(sentimentStats.positive),
+    neutral_percent: toPercent(sentimentStats.neutral),
+    negative_percent: toPercent(sentimentStats.negative),
+    improvementAreas: cleanedImprovementAreas,
+    recommendations: derivedRecommendations,
+    summary: aiSummary,
+    totalFeedback
   };
 
-  const resolvedImprovementAreas = improvementAreas;
+  const resolvedImprovementAreas = cleanedImprovementAreas;
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 dark:bg-gray-900">

@@ -8,6 +8,10 @@ const TeachingImprovementReport = ({
   neutral_percent,
   negative_percent,
   aoi_points,
+  improvementAreas,
+  recommendations,
+  summary,
+  totalFeedback,
 }) => {
   const reportRef = useRef();
 
@@ -32,8 +36,20 @@ const TeachingImprovementReport = ({
 
   const parseList = (text) => {
     if (!text) return [];
-    return text.split('\n').map(item => item.replace(/^- /, '').trim()).filter(item => item);
+    return text
+      .split('\n')
+      .map((item) => item.replace(/^- /, '').trim())
+      .filter((item) => item);
   };
+
+  const resolvedImprovementAreas = Array.isArray(improvementAreas)
+    ? improvementAreas
+    : parseList(aoi_points);
+
+  const resolvedRecommendations =
+    Array.isArray(recommendations) && recommendations.length > 0
+      ? recommendations
+      : resolvedImprovementAreas.slice(0, 3);
 
   return (
     <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 min-h-screen p-8">
@@ -74,7 +90,7 @@ const TeachingImprovementReport = ({
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#dbeafe', color: '#2563eb' }}>1</span>
             Overall Sentiment Overview
           </h3>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
               { label: 'Positive', value: positive_percent, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
               { label: 'Neutral', value: neutral_percent, color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
@@ -86,6 +102,11 @@ const TeachingImprovementReport = ({
               </div>
             ))}
           </div>
+          {typeof totalFeedback === 'number' && (
+            <p className="mt-4 text-sm" style={{ color: '#6b7280' }}>
+              Based on {totalFeedback} feedback submission{totalFeedback === 1 ? '' : 's'}.
+            </p>
+          )}
         </div>
 
         {/* 2. Areas of Improvement */}
@@ -95,14 +116,20 @@ const TeachingImprovementReport = ({
             Areas for Improvement
           </h3>
           <div className="rounded-xl p-6" style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {parseList(aoi_points).map((point, i) => (
-                <div key={i} className="flex items-start p-3 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ffedd5', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}>
-                  <span className="text-xl mr-3" style={{ color: '#f97316' }}>-</span>
-                  <span className="font-medium" style={{ color: '#374151' }}>{point}</span>
-                </div>
-              ))}
-            </div>
+            {resolvedImprovementAreas.length === 0 ? (
+              <p className="text-sm" style={{ color: '#6b7280' }}>
+                Not enough feedback data to generate improvement areas yet.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {resolvedImprovementAreas.map((point, i) => (
+                  <div key={i} className="flex items-start p-3 rounded-lg" style={{ backgroundColor: '#ffffff', border: '1px solid #ffedd5', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}>
+                    <span className="text-xl mr-3" style={{ color: '#f97316' }}>-</span>
+                    <span className="font-medium" style={{ color: '#374151' }}>{point}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -112,19 +139,42 @@ const TeachingImprovementReport = ({
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ccfbf1', color: '#0d9488' }}>3</span>
             Actionable Recommendations
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl transition" style={{ backgroundColor: '#ffffff', borderTop: '4px solid #14b8a6', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-              <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>Differentiated Instruction</h4>
-              <p className="text-sm" style={{ color: '#4b5563' }}>Use tiered activities so every student can engage at the right level.</p>
+          {resolvedRecommendations.length === 0 ? (
+            <p className="text-sm" style={{ color: '#6b7280' }}>
+              Recommendations will appear once more feedback is collected.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {resolvedRecommendations.map((rec, index) => (
+                <div
+                  key={index}
+                  className="p-6 rounded-xl transition"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    borderTop: `4px solid ${index % 3 === 0 ? '#14b8a6' : index % 3 === 1 ? '#3b82f6' : '#a855f7'}`,
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>
+                    Recommendation {index + 1}
+                  </h4>
+                  <p className="text-sm" style={{ color: '#4b5563' }}>{rec}</p>
+                </div>
+              ))}
             </div>
-            <div className="p-6 rounded-xl transition" style={{ backgroundColor: '#ffffff', borderTop: '4px solid #3b82f6', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-              <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>Interactive Pacing</h4>
-              <p className="text-sm" style={{ color: '#4b5563' }}>Use real-time polls to gauge understanding before moving to the next topic.</p>
-            </div>
-            <div className="p-6 rounded-xl transition" style={{ backgroundColor: '#ffffff', borderTop: '4px solid #a855f7', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-              <h4 className="font-bold text-lg mb-2" style={{ color: '#1f2937' }}>Real-world Application</h4>
-              <p className="text-sm" style={{ color: '#4b5563' }}>Integrate more case studies and industry examples to increase engagement.</p>
-            </div>
+          )}
+        </div>
+
+        {/* 4. AI Summary */}
+        <div className="mt-10 relative z-10">
+          <h3 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: '#1f2937' }}>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#e0e7ff', color: '#4338ca' }}>4</span>
+            AI Summary
+          </h3>
+          <div className="rounded-xl p-6" style={{ backgroundColor: '#eef2ff', border: '1px solid #e0e7ff' }}>
+            <p className="text-sm whitespace-pre-line" style={{ color: '#374151' }}>
+              {summary || "AI summary unavailable for this report yet."}
+            </p>
           </div>
         </div>
 
