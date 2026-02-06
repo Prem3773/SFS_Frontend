@@ -79,7 +79,7 @@ const Teacherdashboard = ({ user }) => {
         setImprovementAreas(data.improvementAreas || data.areasForImprovement || []);
         setAiSummary(data.summary || data.aiSummary || data.analysisSummary || "AI summary unavailable.");
         setMonthlyTrend(trendPayload); // Use trend from backend
-        setAiStatus("Provided by backend AI");
+       
         setLoading(false);
 
       } catch (err) {
@@ -210,10 +210,10 @@ const Teacherdashboard = ({ user }) => {
                 {/* IMPROVEMENT AREAS */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6">
                   <h2 className="text-2xl font-semibold mb-4">
-                    Areas for Improvement
+                   AI-Based Areas for Improvement 
                   </h2>
 
-                  {resolvedImprovementAreas.length === 0 ? (
+                  {resolvedImprovementAreas.length === 3? (
                     <p className="text-gray-500">Not enough data to generate improvement areas yet.</p>
                   ) : (
                     <>
@@ -229,7 +229,7 @@ const Teacherdashboard = ({ user }) => {
                 </div>
 
                 {/* RECENT FEEDBACK */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6">
+                {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6">
                   <h2 className="text-2xl font-semibold mb-4">Recent Feedback</h2>
                   {recentFeedback.length === 0 ? (
                     <p className="text-gray-500">No recent feedback.</p>
@@ -260,7 +260,7 @@ const Teacherdashboard = ({ user }) => {
                       ))}
                     </ul>
                   )}
-                </div>
+                </div> */}
 
                 {/* AI SUMMARY */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6 mb-10">
