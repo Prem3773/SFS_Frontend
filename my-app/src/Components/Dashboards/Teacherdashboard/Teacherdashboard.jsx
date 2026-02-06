@@ -213,7 +213,7 @@ const Teacherdashboard = ({ user }) => {
                    AI-Based Areas for Improvement 
                   </h2>
 
-                  {resolvedImprovementAreas.length === 3? (
+                  {resolvedImprovementAreas.length === 0 ? (
                     <p className="text-gray-500">Not enough data to generate improvement areas yet.</p>
                   ) : (
                     <>
@@ -274,10 +274,8 @@ const Teacherdashboard = ({ user }) => {
                   )}
                   <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
                     {aiSummary ||
-                      (GEMINI_ONLY
-                        ? aiLoading
-                          ? "Generating summary with Gemini..."
-                          : "Gemini summary not available yet."
+                      (aiLoading
+                        ? "Generating summary..."
                         : "AI summary unavailable.")}
                   </p>
                 </div>
