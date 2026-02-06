@@ -26,12 +26,16 @@ const Register = ({ onRegister }) => {
     }
 
     try {
+      const payload = { username, email, password, role: role.toLowerCase(), subject };
+      if (role.toLowerCase() === 'student') {
+        payload.attendance = 80;
+      }
       const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password, role: role.toLowerCase(), subject }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();

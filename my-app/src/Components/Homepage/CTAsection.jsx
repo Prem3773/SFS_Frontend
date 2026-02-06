@@ -98,81 +98,74 @@ const CTAsection = () => {
   ]
 
     return (
-<div classname="min-h-screen bg-slate-950 text-white">
-
+      <div className="min-h-screen bg-slate-950 text-white">
         <div className="bg-gray-50">
-           <section className="text-center py-2 md:py-32 px-2 animate-fade-in mb- ">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900">
-            <span className="block">Welcome to </span>
-            <span className="block text-blue-600 mt-2">EduFeed</span>
-          </h1>
-          <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-gray-600">
-            Real-time Insights for Educational Excellence. <br /> Empowering institutions with AI-ML driven feedback analysis.
-          </p>
-          {/* <div className="mt-8">
-            <Link to="/register" className="inline-flex items-center justify-center px-8 py-2 text-2xl font-large text-center text-blue-600 border border-black border-2 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100">
-              Get Started
-            </Link>
-          </div> */}
-        </section>
-
-          </div>
-          <div className="m-h-screen bg-slate-950 text-white">
-                <section className="relative overflow-hidden">
-                  <div className="absolute inset-0">
-                    <div className="absolute -top-24 -right-32 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
-                    <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
-                  </div>
-                  <div className="relative max-w-10xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-              <div className="grid items-start justify-items-start gap-12 lg:grid-cols-2">
-
-                      <div>
-                        <div className="mb-6 ml-44 flex  items-center flex-wrap gap-2 text-xs uppercase tracking-widest text-white/70">
-                          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Student</span>
-                          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Teacher</span>
-                          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Admin</span>
-                        </div>
-                        <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-                          About EduFeed Feedback System
-                        </h1>
-                        <p className="mt-6 text-lg text-white/80">
-                          Built to capture meaningful feedback, analyze it with AI/ML, and deliver insights
-                          that help students, teachers, and administrators move faster together.
-                        </p>
-                        <div className="mt-8 ml-48 flex flex-wrap gap-3">
-                          <Link
-                            to="/register"
-                            className="rounded-full bg-white px-12 py-6 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-                          >
-                            Get Started
-                          </Link>
-                          <Link
-                            to="/login"
-                            className="rounded-full border border-white/30 px-12 py-6 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
-                          >
-                            Login
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        {stats.map((stat) => (
-                          <div
-                          key={stat.label}
-                          className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
-                          >
-                            <div className="text-3xl font-semibold">{stat.value}</div>
-                            <div className="mt-2 text-sm uppercase tracking-widest text-white/60">
-                              {stat.label}
-                            </div>
-                            <div className="mt-3 text-sm text-white/70">{stat.detail}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </section>
+          <section className="animate-fade-in px-4 py-10 text-center sm:px-6 sm:py-16 lg:py-24">
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+              <span className="block">Welcome to </span>
+              <span className="mt-2 block text-blue-600">EduFeed</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 sm:text-lg md:text-xl">
+              Real-time Insights for Educational Excellence. <br /> Empowering institutions with
+              AI-ML driven feedback analysis.
+            </p>
+          </section>
         </div>
-                      </div>
+
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute -top-24 -right-32 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
+            <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
+          </div>
+          <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+            <div className="grid items-start gap-10 lg:grid-cols-2">
+              <div>
+                <div className="mb-6 flex flex-wrap justify-center gap-2 text-xs uppercase tracking-widest text-white/70 lg:justify-start">
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Student</span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Teacher</span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Admin</span>
+                </div>
+                <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                  About EduFeed Feedback System
+                </h1>
+                <p className="mt-4 text-base text-white/80 sm:text-lg">
+                  Built to capture meaningful feedback, analyze it with AI/ML, and deliver insights
+                  that help students, teachers, and administrators move faster together.
+                </p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    to="/register"
+                    className="w-full rounded-full bg-white px-6 py-3 text-center text-sm font-semibold text-slate-900 transition hover:bg-slate-100 sm:w-auto sm:px-8 sm:py-4"
+                  >
+                    Get Started
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="w-full rounded-full border border-white/30 px-6 py-3 text-center text-sm font-semibold text-white transition hover:border-white hover:bg-white/10 sm:w-auto sm:px-8 sm:py-4"
+                  >
+                    Login
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {stats.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
+                  >
+                    <div className="text-3xl font-semibold">{stat.value}</div>
+                    <div className="mt-2 text-xs uppercase tracking-widest text-white/60 sm:text-sm">
+                      {stat.label}
+                    </div>
+                    <div className="mt-3 text-sm text-white/70">{stat.detail}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     )
 }
 
