@@ -9,23 +9,63 @@ const FeedbackCampus = () => {
     safety: '',
     additionalComments: ''
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFeedback({ ...feedback, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Campus Feedback Submitted:', feedback);
-    alert('Feedback submitted successfully! It will be analyzed by AI for improvements.');
-    // Reset form
-    setFeedback({
-      cleaning: '',
-      waterPurity: '',
-      infrastructure: '',
-      safety: '',
-      additionalComments: ''
-    });
+
+    setSubmitting(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login to submit campus feedback.');
+        setSubmitting(false);
+        return;
+      }
+
+      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          category: 'campus',
+          responses: {
+            cleaning: feedback.cleaning,
+            waterPurity: feedback.waterPurity,
+            infrastructure: feedback.infrastructure,
+            safety: feedback.safety,
+            additionalComments: feedback.additionalComments
+          }
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit campus feedback.');
+      }
+
+      alert('Feedback submitted successfully.');
+      setFeedback({
+        cleaning: '',
+        waterPurity: '',
+        infrastructure: '',
+        safety: '',
+        additionalComments: ''
+      });
+    } catch (error) {
+      console.error('Error submitting campus feedback:', error);
+      alert(error.message || 'Error submitting feedback.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -110,9 +150,10 @@ const FeedbackCampus = () => {
           </div>
           <button
             type='submit'
-            className='w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-md transition-colors'
+            disabled={submitting}
+            className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-md transition-colors ${submitting ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            Submit Feedback
+            {submitting ? 'Submitting...' : 'Submit Feedback'}
           </button>
         </form>
       </div>

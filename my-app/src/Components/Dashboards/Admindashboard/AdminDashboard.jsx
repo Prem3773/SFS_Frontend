@@ -3,13 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const AdminDashboard = ({ isDarkMode }) => {
-  const [stats, setStats] = useState({
+  const defaultStats = {
     totalStudentsWithFeedback: 0,
     totalFeedback: 0,
     teacherFeedback: [],
     hostelFeedback: [],
-    campusFeedback: []
-  });
+    campusFeedback: [],
+    hostelSentiment: { positive: 0, neutral: 0, negative: 0 },
+    campusSentiment: { positive: 0, neutral: 0, negative: 0 },
+    hostelAiSummary: { summary: '', improvementAreas: [] },
+    campusAiSummary: { summary: '', improvementAreas: [] }
+  };
+
+  const [stats, setStats] = useState(defaultStats);
   const [error, setError] = useState(null);
   const [userError, setUserError] = useState(null);
   const [users, setUsers] = useState([]);
@@ -17,6 +23,11 @@ const AdminDashboard = ({ isDarkMode }) => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
+
+  const hostelSentiment = stats.hostelSentiment || { positive: 0, neutral: 0, negative: 0 };
+  const campusSentiment = stats.campusSentiment || { positive: 0, neutral: 0, negative: 0 };
+  const hostelAi = stats.hostelAiSummary || {};
+  const campusAi = stats.campusAiSummary || {};
 
   useEffect(() => {
     const loadData = async () => {
@@ -48,13 +59,7 @@ const AdminDashboard = ({ isDarkMode }) => {
       if (response.ok) {
         const data = await response.json();
         console.log('Admin Stats Data:', data);
-        setStats(data || {
-          totalStudentsWithFeedback: 0,
-          totalFeedback: 0,
-          teacherFeedback: [],
-          hostelFeedback: [],
-          campusFeedback: []
-        });
+        setStats({ ...defaultStats, ...(data || {}) });
         setError(null);
       } else {
         setError('Failed to fetch stats');
@@ -212,6 +217,26 @@ const AdminDashboard = ({ isDarkMode }) => {
               }`}
             >
               Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('hostel')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'hostel'
+                  ? 'border-blue-500 text-blue-600'
+                  : (isDarkMode ? 'border-transparent text-gray-300 hover:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-700')
+              }`}
+            >
+              Hostel Feedback
+            </button>
+            <button
+              onClick={() => setActiveTab('campus')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'campus'
+                  ? 'border-blue-500 text-blue-600'
+                  : (isDarkMode ? 'border-transparent text-gray-300 hover:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-700')
+              }`}
+            >
+              Campus Feedback
             </button>
             <button
               onClick={() => setActiveTab('users')}
@@ -373,6 +398,136 @@ const AdminDashboard = ({ isDarkMode }) => {
                 </div>
               </div>
             </>
+          )}
+
+          {activeTab === 'hostel' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                  <h3 className="text-xl font-semibold mb-2">AI Insights - Hostel</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Automatically generated from student hostel feedback.</p>
+                  <p className="mt-3 text-sm leading-6">{hostelAi.summary || 'No hostel feedback yet.'}</p>
+                  <div className="mt-4">
+                    <h4 className="text-sm font-semibold mb-2">Top improvement areas</h4>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      {(hostelAi.improvementAreas && hostelAi.improvementAreas.length > 0 ? hostelAi.improvementAreas : ['Not enough data yet.']).map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                  <h3 className="text-xl font-semibold mb-2">Sentiment Overview</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {['positive', 'neutral', 'negative'].map((key) => (
+                      <div key={key} className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-md text-center`}>
+                        <p className="text-xs uppercase text-gray-500 dark:text-gray-400">{key}</p>
+                        <p className="text-2xl font-bold">{hostelSentiment[key] || 0}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Based on {stats.hostelFeedback?.length || 0} student submissions.</p>
+                </div>
+              </div>
+
+              <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold">Student Hostel Feedback</h3>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Live & dynamic</span>
+                </div>
+                {(stats.hostelFeedback.length === 0) ? (
+                  <p className="text-gray-500">No hostel feedback available</p>
+                ) : (
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {stats.hostelFeedback.map((feedback, index) => (
+                      <div key={index} className={`p-4 rounded-md ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-medium">{feedback?.userId?.username || 'Unknown User'}</span>
+                          <span className="text-sm text-gray-500">
+                            {feedback?.createdAt ? new Date(feedback.createdAt).toLocaleDateString() : 'Unknown Date'}
+                          </span>
+                        </div>
+                        <div className="text-sm">
+                          {feedback?.responses && typeof feedback.responses === 'object' && Object.entries(feedback.responses).map(([key, value], idx) => (
+                            <div key={idx} className="mb-1">
+                              <strong>{key}:</strong> {value || 'N/A'}
+                            </div>
+                          ))}
+                          <div className="mt-2 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            Sentiment: {feedback?.sentiment || 'neutral'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'campus' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                  <h3 className="text-xl font-semibold mb-2">AI Insights - Campus</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Generated from student campus feedback in real time.</p>
+                  <p className="mt-3 text-sm leading-6">{campusAi.summary || 'No campus feedback yet.'}</p>
+                  <div className="mt-4">
+                    <h4 className="text-sm font-semibold mb-2">Top improvement areas</h4>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      {(campusAi.improvementAreas && campusAi.improvementAreas.length > 0 ? campusAi.improvementAreas : ['Not enough data yet.']).map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                  <h3 className="text-xl font-semibold mb-2">Sentiment Overview</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {['positive', 'neutral', 'negative'].map((key) => (
+                      <div key={key} className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-md text-center`}>
+                        <p className="text-xs uppercase text-gray-500 dark:text-gray-400">{key}</p>
+                        <p className="text-2xl font-bold">{campusSentiment[key] || 0}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Based on {stats.campusFeedback?.length || 0} student submissions.</p>
+                </div>
+              </div>
+
+              <div className={`p-6 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold">Student Campus Feedback</h3>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Live & dynamic</span>
+                </div>
+                {(stats.campusFeedback.length === 0) ? (
+                  <p className="text-gray-500">No campus feedback available</p>
+                ) : (
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {stats.campusFeedback.map((feedback, index) => (
+                      <div key={index} className={`p-4 rounded-md ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-medium">{feedback?.userId?.username || 'Unknown User'}</span>
+                          <span className="text-sm text-gray-500">
+                            {feedback?.createdAt ? new Date(feedback.createdAt).toLocaleDateString() : 'Unknown Date'}
+                          </span>
+                        </div>
+                        <div className="text-sm">
+                          {feedback?.responses && typeof feedback.responses === 'object' && Object.entries(feedback.responses).map(([key, value], idx) => (
+                            <div key={idx} className="mb-1">
+                              <strong>{key}:</strong> {value || 'N/A'}
+                            </div>
+                          ))}
+                          <div className="mt-2 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            Sentiment: {feedback?.sentiment || 'neutral'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
           {activeTab === 'users' && (
