@@ -18,14 +18,40 @@ const TeachingImprovementReport = ({
   const handleDownloadPdf = async () => {
     try {
       const element = reportRef.current;
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+
+      // Capture the full report (including off-screen content) at higher DPI for mobile clarity
+      const canvas = await html2canvas(element, {
+        scale: Math.min(window.devicePixelRatio || 2, 3),
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+      });
+
       const imgData = canvas.toDataURL('image/png');
-      
       const pdf = new (jsPDF.jsPDF || jsPDF)('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Keep aspect ratio while fitting the width
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Add the first page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pageHeight;
+
+      // Add extra pages if the report is taller than one sheet (common on mobile)
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+      }
+
       const safeName = (teacherName || "Teacher").toString().replace(/\s+/g, '_');
       pdf.save(`EduFeed_Report_${safeName}.pdf`);
     } catch (error) {
