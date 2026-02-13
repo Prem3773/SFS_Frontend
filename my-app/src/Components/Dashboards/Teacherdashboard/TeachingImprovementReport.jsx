@@ -17,39 +17,45 @@ const TeachingImprovementReport = ({
 
   const handleDownloadPdf = async () => {
     try {
-      const element = reportRef.current;
+      const container = reportRef.current;
+      if (!container) return;
 
-      // Capture the full report (including off-screen content) at higher DPI for mobile clarity
-      const canvas = await html2canvas(element, {
-        scale: Math.min(window.devicePixelRatio || 2, 3),
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
-      });
-
-      const imgData = canvas.toDataURL('image/png');
       const pdf = new (jsPDF.jsPDF || jsPDF)('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = pageHeight - margin * 2;
 
-      // Keep aspect ratio while fitting the width
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+      // Capture each logical section separately so nothing gets cut across pages
+      const sections = container.querySelectorAll('[data-pdf-section]');
+      if (!sections.length) {
+        throw new Error("Report sections not found for PDF export.");
+      }
 
-      let heightLeft = imgHeight;
-      let position = 0;
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        const canvas = await html2canvas(section, {
+          scale: Math.min(window.devicePixelRatio || 2, 3),
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          windowWidth: section.scrollWidth,
+          windowHeight: section.scrollHeight
+        });
 
-      // Add the first page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= pageHeight;
+        const imgData = canvas.toDataURL('image/png');
 
-      // Add extra pages if the report is taller than one sheet (common on mobile)
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pageHeight;
+        // Fit the section to the page without splitting it
+        let imgWidth = maxWidth;
+        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        if (imgHeight > maxHeight) {
+          imgHeight = maxHeight;
+          imgWidth = (canvas.width * imgHeight) / canvas.height;
+        }
+
+        if (i > 0) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight, undefined, 'FAST');
       }
 
       const safeName = (teacherName || "Teacher").toString().replace(/\s+/g, '_');
@@ -96,7 +102,7 @@ const TeachingImprovementReport = ({
         <div className="absolute top-20 -left-10 w-40 h-40 rounded-full opacity-50" style={{ backgroundColor: '#dbeafe', filter: 'blur(64px)' }}></div>
 
         {/* Header */}
-        <div className="flex justify-between items-end pb-6 mb-8 relative z-10" style={{ borderBottom: '1px solid #e5e7eb' }}>
+        <div data-pdf-section className="flex justify-between items-end pb-6 mb-8 relative z-10" style={{ borderBottom: '1px solid #e5e7eb' }}>
           <div>
             <h1 className="text-5xl font-extrabold" style={{ color: '#2563eb' }}>
               EduFeed
@@ -111,7 +117,7 @@ const TeachingImprovementReport = ({
         </div>
 
         {/* 1. Overall Sentiment */}
-        <div className="mb-10 relative z-10">
+        <div data-pdf-section className="mb-10 relative z-10">
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: '#1f2937' }}>
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#dbeafe', color: '#2563eb' }}>1</span>
             Overall Sentiment Overview
@@ -136,7 +142,7 @@ const TeachingImprovementReport = ({
         </div>
 
         {/* 2. Areas of Improvement */}
-        <div className="mb-10 relative z-10">
+        <div data-pdf-section className="mb-10 relative z-10">
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: '#1f2937' }}>
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ffedd5', color: '#ea580c' }}>2</span>
             Areas for Improvement
@@ -160,7 +166,7 @@ const TeachingImprovementReport = ({
         </div>
 
         {/* 3. Actionable Recommendations */}
-        <div className="relative z-10">
+        <div data-pdf-section className="relative z-10">
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: '#1f2937' }}>
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#ccfbf1', color: '#0d9488' }}>3</span>
             Actionable Recommendations
@@ -192,7 +198,7 @@ const TeachingImprovementReport = ({
         </div>
 
         {/* 4. AI Summary */}
-        <div className="mt-10 relative z-10">
+        <div data-pdf-section className="mt-10 relative z-10">
           <h3 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: '#1f2937' }}>
             <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: '#e0e7ff', color: '#4338ca' }}>4</span>
             AI Summary
@@ -205,7 +211,7 @@ const TeachingImprovementReport = ({
         </div>
 
         {/* Footer */}
-        <div className="mt-12 pt-6 text-center" style={{ borderTop: '1px solid #e5e7eb' }}>
+        <div data-pdf-section className="mt-12 pt-6 text-center" style={{ borderTop: '1px solid #e5e7eb' }}>
           <p className="text-sm font-medium" style={{ color: '#9ca3af' }}>Generated by EduFeed AI Analysis System</p>
         </div>
       </div>
