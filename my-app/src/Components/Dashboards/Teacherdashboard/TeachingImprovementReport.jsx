@@ -20,42 +20,56 @@ const TeachingImprovementReport = ({
       const container = reportRef.current;
       if (!container) return;
 
+      // Capture the entire rendered report exactly as seen on screen
+      const canvas = await html2canvas(container, {
+        scale: Math.min(window.devicePixelRatio || 2, 3),
+        useCORS: true,
+        backgroundColor: getComputedStyle(document.body).backgroundColor || '#f3f4f6',
+        windowWidth: container.scrollWidth,
+        windowHeight: container.scrollHeight
+      });
+
       const pdf = new (jsPDF.jsPDF || jsPDF)('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-      const maxWidth = pageWidth - margin * 2;
-      const maxHeight = pageHeight - margin * 2;
+      const margin = 8; // small margin to avoid clipping
 
-      // Capture each logical section separately so nothing gets cut across pages
-      const sections = container.querySelectorAll('[data-pdf-section]');
-      if (!sections.length) {
-        throw new Error("Report sections not found for PDF export.");
-      }
+      const contentWidthMm = pageWidth - margin * 2;
+      const contentHeightMm = pageHeight - margin * 2;
 
-      for (let i = 0; i < sections.length; i++) {
-        const section = sections[i];
-        const canvas = await html2canvas(section, {
-          scale: Math.min(window.devicePixelRatio || 2, 3),
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          windowWidth: section.scrollWidth,
-          windowHeight: section.scrollHeight
-        });
+      // Convert mm space to canvas pixels to know how much to slice per page
+      const pxPerMm = canvas.width / contentWidthMm;
+      const sliceHeightPx = contentHeightMm * pxPerMm;
 
-        const imgData = canvas.toDataURL('image/png');
+      let renderedHeight = 0;
+      let pageIndex = 0;
 
-        // Fit the section to the page without splitting it
-        let imgWidth = maxWidth;
-        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+      while (renderedHeight < canvas.height) {
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = Math.min(sliceHeightPx, canvas.height - renderedHeight);
 
-        if (imgHeight > maxHeight) {
-          imgHeight = maxHeight;
-          imgWidth = (canvas.width * imgHeight) / canvas.height;
-        }
+        const ctx = sliceCanvas.getContext('2d');
+        ctx.drawImage(
+          canvas,
+          0,
+          renderedHeight,
+          canvas.width,
+          sliceCanvas.height,
+          0,
+          0,
+          canvas.width,
+          sliceCanvas.height
+        );
 
-        if (i > 0) pdf.addPage();
-        pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight, undefined, 'FAST');
+        const imgData = sliceCanvas.toDataURL('image/png');
+        const imgHeightMm = sliceCanvas.height / pxPerMm;
+
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, margin, contentWidthMm, imgHeightMm, undefined, 'FAST');
+
+        renderedHeight += sliceCanvas.height;
+        pageIndex++;
       }
 
       const safeName = (teacherName || "Teacher").toString().replace(/\s+/g, '_');
