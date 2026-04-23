@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { buildApiUrl } from '../../../utils/api';
 
 const AdminDashboard = ({ isDarkMode }) => {
   const defaultStats = {
@@ -50,7 +51,7 @@ const AdminDashboard = ({ isDarkMode }) => {
         setLoadingStats(false);
         return;
       }
-      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/feedback/admin/stats', {
+      const response = await fetch(buildApiUrl('/feedback/admin/stats'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -81,7 +82,7 @@ const AdminDashboard = ({ isDarkMode }) => {
         setLoadingUsers(false);
         return;
       }
-      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/auth/users', {
+      const response = await fetch(buildApiUrl('/auth/users'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -108,7 +109,7 @@ const AdminDashboard = ({ isDarkMode }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://feedback-system-1-0sp1.onrender.com/api/auth/users/${userId}`, {
+      const response = await fetch(buildApiUrl(`/auth/users/${userId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -131,7 +132,7 @@ const AdminDashboard = ({ isDarkMode }) => {
   const updateUser = async (userId, updatedData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://feedback-system-1-0sp1.onrender.com/api/auth/users/${userId}`, {
+      const response = await fetch(buildApiUrl(`/auth/users/${userId}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -149,6 +150,35 @@ const AdminDashboard = ({ isDarkMode }) => {
     } catch (error) {
       console.error('Error updating user:', error);
       alert('Error updating user');
+    }
+  };
+
+  const grantResubmission = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('No token found, please login.');
+        return;
+      }
+
+      const response = await fetch(buildApiUrl(`/auth/users/${userId}/resubmission`), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to grant feedback resubmission');
+      }
+
+      alert(data.message || 'Feedback resubmission granted successfully');
+      fetchUsers();
+    } catch (grantError) {
+      console.error('Error granting feedback resubmission:', grantError);
+      alert(grantError.message || 'Error granting feedback resubmission.');
     }
   };
 
@@ -265,6 +295,16 @@ const AdminDashboard = ({ isDarkMode }) => {
                   <h3 className="text-lg font-semibold mb-2">Total Feedback Submissions</h3>
                   <p className="text-3xl font-bold text-green-600">{stats.totalFeedback}</p>
                 </div>
+              </div>
+
+              <div className={`p-6 rounded-lg shadow-md mb-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                <p className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  Submission Control
+                </p>
+                <h3 className="text-xl font-semibold mt-1">Duplicate feedback is blocked</h3>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  Students can submit feedback only once by default. If a student already submitted feedback and needs to submit again, use the resubmission column in User Management to grant one extra submission.
+                </p>
               </div>
 
               <div className={`p-6 rounded-lg shadow-md mb-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
@@ -543,6 +583,8 @@ const AdminDashboard = ({ isDarkMode }) => {
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Subject</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Created</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Attendance</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Feedback</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Resubmission</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
@@ -564,6 +606,41 @@ const AdminDashboard = ({ isDarkMode }) => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(user.createdAt).toLocaleDateString()}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {user.attendance !== undefined ? user.attendance + '%' : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {user.role === 'student'
+                            ? user.hasSubmittedFeedback
+                              ? `${user.feedbackCount} submitted`
+                              : 'No feedback yet'
+                            : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {user.role === 'student' ? (
+                            <div className="flex flex-col gap-2">
+                              <span className={`inline-flex w-fit rounded-full px-2 py-1 text-xs font-semibold ${
+                                (user.feedbackResubmissionCredits || 0) > 0
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-gray-200 text-gray-700'
+                              }`}>
+                                {(user.feedbackResubmissionCredits || 0) > 0
+                                  ? `${user.feedbackResubmissionCredits} credit${user.feedbackResubmissionCredits === 1 ? '' : 's'} available`
+                                  : 'Locked'}
+                              </span>
+                              <button
+                                onClick={() => grantResubmission(user._id)}
+                                disabled={!user.hasSubmittedFeedback}
+                                className={`w-fit rounded-md px-3 py-1 text-xs font-medium text-white ${
+                                  user.hasSubmittedFeedback
+                                    ? 'bg-indigo-600 hover:bg-indigo-700'
+                                    : 'bg-gray-400 cursor-not-allowed'
+                                }`}
+                              >
+                                Allow 1 Resubmission
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="text-gray-500">N/A</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
@@ -616,7 +693,7 @@ const AdminDashboard = ({ isDarkMode }) => {
                       </tr>
                     )) : (
                       <tr>
-                        <td colSpan="7" className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        <td colSpan="9" className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
                             No users found.
                         </td>
                       </tr>

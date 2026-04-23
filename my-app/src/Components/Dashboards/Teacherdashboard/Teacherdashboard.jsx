@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TeacherSidebar from "./TeacherSidebar";
 import TeachingImprovementReport from "./TeachingImprovementReport";
+import { buildApiUrl } from "../../../utils/api";
 import {
   PieChart,
   Pie,
@@ -48,7 +49,7 @@ const Teacherdashboard = ({ user }) => {
           return;
         }
         
-        const url = new URL("https://feedback-system-1-0sp1.onrender.com/api/feedback/teacher/stats");
+        const url = buildApiUrl("/feedback/teacher/stats");
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },

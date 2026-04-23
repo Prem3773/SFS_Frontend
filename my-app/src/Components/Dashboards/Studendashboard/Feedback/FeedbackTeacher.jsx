@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUser } from 'react-icons/fa';
+import { buildApiUrl } from '../../../../utils/api';
 
 const FeedbackTeacher = () => {
   const [feedback, setFeedback] = useState({
@@ -14,11 +15,14 @@ const FeedbackTeacher = () => {
   const [loading, setLoading] = useState(true);
   const [attendance, setAttendance] = useState(null);
   const [error, setError] = useState(null);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessageType, setSubmitMessageType] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/auth/teachers');
+        const response = await fetch(buildApiUrl('/auth/teachers'));
         if (response.ok) {
           const data = await response.json();
           setTeachers(data);
@@ -39,7 +43,7 @@ const FeedbackTeacher = () => {
           setLoading(false);
           return;
         }
-        const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/auth/users', {
+        const response = await fetch(buildApiUrl('/auth/users'), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -71,29 +75,39 @@ const FeedbackTeacher = () => {
   }, []);
 
   const handleChange = (e) => {
+    if (submitMessage) {
+      setSubmitMessage('');
+      setSubmitMessageType('');
+    }
     setFeedback({ ...feedback, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitMessage('');
+    setSubmitMessageType('');
 
     if (attendance !== null && attendance < 75) {
-      alert('You are not eligible to submit feedback due to insufficient attendance.');
+      setSubmitMessage('You are not eligible to submit feedback due to insufficient attendance.');
+      setSubmitMessageType('error');
       return;
     }
 
     if (!feedback.teacherId) {
-      alert('Please select a teacher.');
+      setSubmitMessage('Please select a teacher.');
+      setSubmitMessageType('error');
       return;
     }
 
     try {
+      setSubmitting(true);
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('You are not logged in. Please log in to submit feedback.');
+        setSubmitMessage('You are not logged in. Please log in to submit feedback.');
+        setSubmitMessageType('error');
         return;
       }
-      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/feedback', {
+      const response = await fetch(buildApiUrl('/feedback'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +127,8 @@ const FeedbackTeacher = () => {
       });
 
       if (response.ok) {
-        alert('Feedback submitted successfully');
+        setSubmitMessage('Feedback submitted successfully.');
+        setSubmitMessageType('success');
         setFeedback({
           teacherId: '',
           teachingQuality: '',
@@ -123,12 +138,16 @@ const FeedbackTeacher = () => {
           additionalComments: ''
         });
       } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+        const errorData = await response.json().catch(() => ({}));
+        setSubmitMessage(errorData.message || 'An error occurred while submitting feedback.');
+        setSubmitMessageType('error');
       }
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      alert('An error occurred while submitting feedback.');
+      setSubmitMessage('An error occurred while submitting feedback.');
+      setSubmitMessageType('error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -159,6 +178,17 @@ const FeedbackTeacher = () => {
         <p className='text-gray-600 dark:text-gray-300 mb-6'>
           Provide detailed feedback on your teachers. Your input helps enhance teaching quality and will be analyzed by AI.
         </p>
+        {submitMessage && (
+          <div
+            className={`mb-6 rounded-md border px-4 py-3 text-sm ${
+              submitMessageType === 'success'
+                ? 'border-green-300 bg-green-50 text-green-700'
+                : 'border-red-300 bg-red-50 text-red-700'
+            }`}
+          >
+            {submitMessage}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className='space-y-6'>
           <div>
             <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
@@ -250,9 +280,12 @@ const FeedbackTeacher = () => {
           </div>
           <button
             type='submit'
-            className='w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-md transition-colors'
+            disabled={submitting}
+            className={`w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-md transition-colors ${
+              submitting ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
           >
-            Submit Feedback
+            {submitting ? 'Submitting...' : 'Submit Feedback'}
           </button>
         </form>
       </div>

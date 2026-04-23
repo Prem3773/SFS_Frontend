@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { buildApiUrl } from '../../utils/api';
 
 
 // User roles constant (not used in form, but kept for reference)
 const UserRole = {
   Student: 'Student',
-  Teacher: 'Teacher'
+  Teacher: 'Teacher',
+  Admin: 'Admin'
 };
 
 // Simple Card component (if not available elsewhere)
@@ -33,23 +35,28 @@ const Button = ({ children, type, className, variant, ...props }) => (
 const Login = ({ onLogin }) => {
   const loginRef = useRef(null);
 
+  const [selectedRole, setSelectedRole] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLoginFormSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      alert('Please enter username and password.');
+    if (!selectedRole || !username || !password) {
+      alert('Please select role and enter username/password.');
       return;
     }
 
     try {
-      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/auth/login', {
+      const response = await fetch(buildApiUrl('/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username,
+          password,
+          role: selectedRole.toLowerCase()
+        }),
       });
 
       const data = await response.json();
@@ -84,6 +91,20 @@ const Login = ({ onLogin }) => {
                   <p className="mt-2 text-lg text-gray-600">Login to continue to EduFeed.</p>
                 </div>
                 <form onSubmit={handleLoginFormSubmit} className="mt-8 space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <select
+                      value={selectedRole}
+                      onChange={e => setSelectedRole(e.target.value)}
+                      required
+                      className="mt-1 block w-full p-3 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white border-gray-300 text-gray-900"
+                    >
+                      <option value="">Select role</option>
+                      <option value={UserRole.Student}>{UserRole.Student}</option>
+                      <option value={UserRole.Teacher}>{UserRole.Teacher}</option>
+                      <option value={UserRole.Admin}>{UserRole.Admin}</option>
+                    </select>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Username</label>
                     <input

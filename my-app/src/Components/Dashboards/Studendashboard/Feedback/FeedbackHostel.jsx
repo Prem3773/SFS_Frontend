@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaHome } from 'react-icons/fa';
+import { buildApiUrl } from '../../../../utils/api';
 
 const FeedbackHostel = () => {
   const [feedback, setFeedback] = useState({
@@ -28,7 +29,7 @@ const FeedbackHostel = () => {
         return;
       }
 
-      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/feedback', {
+      const response = await fetch(buildApiUrl('/feedback'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

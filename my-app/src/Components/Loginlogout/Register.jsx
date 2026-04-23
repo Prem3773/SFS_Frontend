@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildApiUrl } from '../../utils/api';
 
 // Simple register component - same structure as login
 const Register = ({ onRegister }) => {
@@ -30,7 +31,7 @@ const Register = ({ onRegister }) => {
       if (role.toLowerCase() === 'student') {
         payload.attendance = 80;
       }
-      const response = await fetch('https://feedback-system-1-0sp1.onrender.com/api/auth/register', {
+      const response = await fetch(buildApiUrl('/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
