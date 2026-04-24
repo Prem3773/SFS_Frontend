@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { buildApiUrl } from '../../utils/api';
+import { buildApiUrl, parseApiResponse } from '../../utils/api';
 
 // Simple register component - same structure as login
 const Register = ({ onRegister }) => {
@@ -39,18 +39,18 @@ const Register = ({ onRegister }) => {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const data = await parseApiResponse(response);
 
       if (response.ok) {
         alert('Registration successful! Please login.');
         // Redirect to login page
         window.location.href = '/login';
       } else {
-        alert(data.message || 'Registration failed');
+        alert(data?.message || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Network error. Please try again.');
+      alert('Unable to reach the registration service. Please try again later.');
     }
   };
 

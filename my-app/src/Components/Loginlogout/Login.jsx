@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { buildApiUrl } from '../../utils/api';
+import { buildApiUrl, parseApiResponse } from '../../utils/api';
 
 
 // User roles constant (not used in form, but kept for reference)
@@ -59,7 +59,7 @@ const Login = ({ onLogin }) => {
         }),
       });
 
-      const data = await response.json();
+      const data = await parseApiResponse(response);
 
       if (response.ok) {
         // Store token in localStorage
@@ -71,11 +71,11 @@ const Login = ({ onLogin }) => {
           onLogin(data.user.username, data.user.role);
         }
       } else {
-        alert(data.message || 'Login failed');
+        alert(data?.message || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Network error. Please try again.');
+      alert('Unable to reach the login service. Please try again later.');
     }
   };
 
