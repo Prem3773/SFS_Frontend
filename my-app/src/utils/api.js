@@ -1,12 +1,21 @@
 const productionApiBaseUrl = 'https://feedback-system-1-0sp1.onrender.com/api';
 
-const fallbackApiBaseUrl =
+const isProductionHost =
   typeof window !== 'undefined' &&
-  !['localhost', '127.0.0.1'].includes(window.location.hostname)
+  !['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+const fallbackApiBaseUrl =
+  isProductionHost
     ? productionApiBaseUrl
     : 'http://localhost:3001/api';
 
-export const API_BASE_URL = (import.meta.env.VITE_API_URL || fallbackApiBaseUrl).replace(/\/$/, '');
+const configuredApiBaseUrl = import.meta.env.VITE_API_URL?.trim();
+
+export const API_BASE_URL = (
+  isProductionHost && (!configuredApiBaseUrl || configuredApiBaseUrl.startsWith('/'))
+    ? productionApiBaseUrl
+    : configuredApiBaseUrl || fallbackApiBaseUrl
+).replace(/\/$/, '');
 
 export const buildApiUrl = (path = '') => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;

@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://feedback-system-1-0sp1.onrender.com/api/:path*"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
